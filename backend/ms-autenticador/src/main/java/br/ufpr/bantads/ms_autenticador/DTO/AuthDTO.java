@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor // Gera construtor com todos os argumentos
 @NoArgsConstructor
 
+
 public class AuthDTO {
     private String login;
-    private String senha;
+    private String senha; // Existe por apenas poucos segundos, depois é apagada por segurança
     private TipoCliente tipo;  
     public enum TipoCliente {
         CLIENTE,
