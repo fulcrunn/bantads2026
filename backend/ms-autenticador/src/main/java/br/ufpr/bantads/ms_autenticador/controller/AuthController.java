@@ -27,22 +27,31 @@ public class AuthController {
     // O Spring injeta magicamente o valor que está no application.properties!
     @Value("${jwt.secret}")
     private String jwtSecret;
-
+    // Converte a String do segredo para uma Chave Criptográfica
+    
+    
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
+    private final Key chaveAssinatura;
+
+public AuthController(
+        AuthService authService,
+        @Value("${jwt.secret}") String jwtSecret) {
+
+    this.authService = authService;
+    this.chaveAssinatura = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+}
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody AuthDTO dadosLogin) {
+        System.out.println("VALOR DO JWT.SECRET IS: " + jwtSecret); 
         Optional<UsuarioAuth> usuarioValidado = authService.fazerLogin(dadosLogin.getLogin(), dadosLogin.getSenha());
 
         if (usuarioValidado.isPresent()) {
             long tempoExpiracaoTeste = 60000; // 1 minuto
 
             // Converte a String do segredo para uma Chave Criptográfica
-            Key chaveAssinatura = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+            //Key chaveAssinatura = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
 
             String meuTokenJwt = Jwts.builder()
                     .setSubject(usuarioValidado.get().getLogin())
